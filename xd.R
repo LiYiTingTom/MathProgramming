@@ -177,7 +177,7 @@ contour(x1, x2, Z1, add = TRUE)
 abline(a = b/A[, 2], b = -A[, 1]/A[, 2], lwd = 2, col = 3)
 points(x.star[1], x.star[2], col = 4, pch = 20, cex = 2)
 
-###===================================================================== Exercise
+### EXercise
 # Find the min value of 
 # f(x, y, z) = x^2 + y^2 + z^2
 # ont he line that is the intersection of the plane
@@ -187,7 +187,7 @@ points(x.star[1], x.star[2], col = 4, pch = 20, cex = 2)
 
 ### 1.
 f = function(x) {
-  x1 = c(1, 2, 3) * x
+  x1 = c(1, 1, 1) * x
   return (t(x1) %*% x1)
 }
 
@@ -213,7 +213,7 @@ LD = function(y) {
 ### 3.
 a1 = optim(rep(0, 2), LD, control = list(fnscale = -1))
 y.star = a1$par
-round(y.star, 4)
+#round(y.star, 4)
 
 ### 4.
 L.y.star = function(x) {
