@@ -81,7 +81,7 @@ g <- function(y){
   return(L(x, y))
  }
  a1 <- optim(rep(0, 2), L.x)
- return(a1$va1)
+ return(a1$val)
 }
 # g(0)
 yy <- matrix(seq(-3, 3, 0.1), ncol = 1)
@@ -132,49 +132,96 @@ solve(A, b)
 ### 1. Formulate the L(x, y) of the prima1 optima1ity problem
 
 # L(x, y) = f(x) + y^T %*% (Ax -b)
-L = function(x, y) {
-  z = f(x) + matrix(y, nrow = 1) %*% (Ax %*% x - b)
+L <- function(x, y){
+ z <- f(x) + matrix(y, nrow = 1) %*% (A %*% x -b)
   return (z)
 }
 
-
 # Single :
-A = matrix(c(1, 1), 1, 2)
-b = 1
-x = rep(0, 2)
-y = rep(0, 1)
+A <- matrix(c(1, 1), 1, 2)
+b <- 1
+x <- rep(0, 2)
+y <- rep(0, 1)
 L(x, y)
 
 ### 2. Solve numerica1ly the LD(x, y)
 # LD(y) = inf_x L(x, y)
 LD = function(y) {
-  L.x = function(x) {
-    return (L(x, y))
-  }
-  a1 = optim(rep(0, 2), L.x)
-  return (a1$va1)
+ L.x = function(x) {
+  return (L(x, y))
+ }
+ a1 = optim(rep(0, 2), L.x)
+ return (a1$val)
 }
 
 LD(0)
 yy = matrix(seq(-3, 3, 0.1), ncol = 1)
-zz = apply(yy, l, LD)
-plot(yy, zz, type = "1",
-     main = "Lagrang dua1 func. of y")
+zz = apply(yy, 1, LD)
+plot(yy, zz, type = "l", main = "Lagrang dua1 function of y")
 
-### 3. 
+### 3. Solve the dual problem: y* = argmax_y g(y)
 a1 = optim(rep(0, 1), LD, control = list(fnsca1e = -1))
 y.star = a1$par
 
-### 4.
-L.y.star = function(x) {
-  return (L(x, y.star))
+### 4. Recover x* =argmin_x L(x, y*) = the solution of the problem
+L.y.star = function(x){
+ return (L(x, y.star))
 }
 a1 = optim(rep(0, 2), L.y.star)
 x.star = a1$par
 x.star
 #
 A %*% x.star - b
-image(x1, x2, z1, main = "z = f(x1, x2)")
-contour(x1, x2, z1, add = TRUE)
-abline(a = b/A[, 2], b = -A[, 1]/a[, 2], lwd = 2, col = 3)
+image(x1, x2, Z1, main = "z = f(x1, x2)")
+contour(x1, x2, Z1, add = TRUE)
+abline(a = b/A[, 2], b = -A[, 1]/A[, 2], lwd = 2, col = 3)
 points(x.star[1], x.star[2], col = 4, pch = 20, cex = 2)
+
+###===================================================================== Exercise
+# Find the min value of 
+# f(x, y, z) = x^2 + y^2 + z^2
+# ont he line that is the intersection of the plane
+# x + y = 2
+# and the plane
+# y + z = 1
+
+### 1.
+f = function(x) {
+  x1 = c(1, 2, 3) * x
+  return (t(x1) %*% x1)
+}
+
+g = function(x) {
+  A = matrix(c(1, 1, 0, 0, 1, 1), 2, 3, byrow = TRUE)
+  b = c(2, 1)
+  return (A %*% x - b)
+}
+
+L = function(x, y) {
+  return (f(x) + y %*% g(x))
+}
+
+### 2.
+LD = function(y) {
+  L.x = function(x) {
+    return (L(x, y))
+  }
+  a1 = optim(rep(0, 3), L.x)
+  return (a1$val)
+}
+
+### 3.
+a1 = optim(rep(0, 2), LD, control = list(fnscale = -1))
+y.star = a1$par
+round(y.star, 4)
+
+### 4.
+L.y.star = function(x) {
+  return (L(x, y.star))
+}
+a1 = optim(rep(0, 3), L.y.star)
+x.star = a1$par
+x.star
+#
+g(x.star)
+
